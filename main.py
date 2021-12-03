@@ -4,35 +4,45 @@ from statistics import mean, median
 import csv
 
 
-def write_statistics(f, title, data, beta=None):
-    f.write('\n')
-    f.write(title + ' time min:    ' + str(min(data)) + '\n')
-    f.write(title + ' time max:    ' + str(max(data)) + '\n')
-    f.write(title + ' time mean:   ' + str(mean(data)) + '\n')
-    f.write(title + ' time median: ' + str(median(data)) + '\n')
-
+def write_statistics(title, data, beta=None):
     if beta is None:
-        bucket_boundaries = [x/10 for x in range(0, 11)]
+        bucket_boundaries = [x / 10 for x in range(0, 11)]
     else:
         # bucket_boundaries = [0, 0.1, 0.3, 0.7, 1.5, 3.1]
-        bucket_boundaries = [0, beta/2, beta, 2*beta, 3*beta]
+        bucket_boundaries = [0, beta / 2, beta, 2 * beta, 3 * beta]
 
-    weights = [1/len(data)] * len(data)
+    weights = [1 / len(data)] * len(data)
 
-    plt.hist(data, bins=bucket_boundaries, weights=weights, edgecolor='white')
+    px, _, _ = plt.hist(data, bins=bucket_boundaries, weights=weights, edgecolor='white')
     plt.ylim(0, 1)
     plt.xticks(bucket_boundaries)
     plt.title(title + ' P(x)')
     plt.show()
-    plt.hist(data, bins=bucket_boundaries, cumulative=True, weights=weights, color='green', edgecolor='white')
+    fx, _, _ = plt.hist(data, bins=bucket_boundaries, cumulative=True, weights=weights, color='green',
+                        edgecolor='white')
     plt.ylim(0, 1)
     plt.xticks(bucket_boundaries)
     plt.title(title + ' F(x)')
     plt.show()
 
+    with open('output_c.txt', 'w' if beta is None else 'a') as f:
+        f.write('\n')
+        f.write(title + ' time min:    ' + str(min(data)) + '\n')
+        f.write(title + ' time max:    ' + str(max(data)) + '\n')
+        f.write(title + ' time mean:   ' + str(mean(data)) + '\n')
+        f.write(title + ' time median: ' + str(median(data)) + '\n')
 
-def task_a(input_file, output_file):
-    with open(input_file, 'r') as f:
+        f.write('\n')
+        f.write('bucket       |  P(x)  |  F(x)\n')
+        for i in range(len(bucket_boundaries) - 1):
+            f.write('{:.2f} - {:.2f}  |  {:.2f}  |  {:.2f}\n'.format(
+                bucket_boundaries[i], bucket_boundaries[i + 1], px[i], fx[i]
+            ))
+        f.write('\n')
+
+
+def task_a():
+    with open('input.txt', 'r') as f:
         mean_interarrival_time = float(f.readline())
         mean_service_time = float(f.readline())
         total_customers = int(f.readline())
@@ -41,12 +51,11 @@ def task_a(input_file, output_file):
     simulator.run()
 
     outputs = simulator.get_statistics()
-    with open(output_file, 'w') as f:
+    with open('output_a.txt', 'w') as f:
         f.write('Average delay in queue: ' + str(outputs['average_delay_in_queue']) + ' minutes\n')
         f.write('Average queue length:   ' + str(outputs['average_queue_length']) + '\n')
         f.write('Server utilization:     ' + str(outputs['server_utilization']) + '\n')
         f.write('Time simulation ended:  ' + str(outputs['time_simulation_ended']) + ' minutes\n')
-        f.write('\n')
 
     interarrival_rv_pairs, service_rv_pairs = simulator.get_rv_pairs()
 
@@ -62,14 +71,13 @@ def task_a(input_file, output_file):
     plt.title('Uni vs Expo - service time')
     plt.show()
 
-    with open(output_file, 'a') as f:
-        write_statistics(f, 'Uniform', ix + sx)
-        write_statistics(f, 'Interarrival', iy, mean_interarrival_time)
-        write_statistics(f, 'Service', sy, mean_service_time)
+    write_statistics('Uniform', ix + sx)
+    write_statistics('Interarrival', iy, mean_interarrival_time)
+    write_statistics('Service', sy, mean_service_time)
 
 
-def task_b(input_file, output_file):
-    with open(input_file, 'r') as f:
+def task_b():
+    with open('input.txt', 'r') as f:
         mean_interarrival_time = float(f.readline())
         f.readline()
         total_customers = int(f.readline())
@@ -88,7 +96,7 @@ def task_b(input_file, output_file):
         outputs = simulator.get_statistics()
         table.append([k / 10] + list(outputs.values()))
 
-    with open(output_file, 'w') as f:
+    with open('output_b.csv', 'w') as f:
         writer = csv.writer(f)
         writer.writerows(table)
 
@@ -100,8 +108,8 @@ def task_b(input_file, output_file):
 
 
 def main():
-    task_a('input.txt', 'output_a.txt')
-    task_b('input.txt', 'output_b.csv')
+    task_a()
+    task_b()
 
 
 if __name__ == '__main__':
