@@ -4,6 +4,9 @@ from statistics import mean, median
 import csv
 
 
+PLOT = True
+
+
 def write_statistics(title, data, beta=None):
     if beta is None:
         bucket_boundaries = [x / 10 for x in range(0, 11)]
@@ -17,25 +20,27 @@ def write_statistics(title, data, beta=None):
     plt.ylim(0, 1)
     plt.xticks(bucket_boundaries)
     plt.title(title + ' P(x)')
-    plt.show()
+    if PLOT:
+        plt.show()
     fx, _, _ = plt.hist(data, bins=bucket_boundaries, cumulative=True, weights=weights, color='green',
                         edgecolor='white')
     plt.ylim(0, 1)
     plt.xticks(bucket_boundaries)
     plt.title(title + ' F(x)')
-    plt.show()
+    if PLOT:
+        plt.show()
 
     with open('output_c.txt', 'w' if beta is None else 'a') as f:
         f.write('\n')
-        f.write(title + ' time min:    ' + str(min(data)) + '\n')
-        f.write(title + ' time max:    ' + str(max(data)) + '\n')
-        f.write(title + ' time mean:   ' + str(mean(data)) + '\n')
-        f.write(title + ' time median: ' + str(median(data)) + '\n')
+        f.write('{} time min:    {:.3f}\n'.format(title, min(data)))
+        f.write('{} time max:    {:.3f}\n'.format(title, max(data)))
+        f.write('{} time mean:   {:.3f}\n'.format(title, mean(data)))
+        f.write('{} time median: {:.3f}\n'.format(title, median(data)))
 
         f.write('\n')
-        f.write('bucket       |  P(x)  |  F(x)\n')
+        f.write('bucket         |  P(x)   |  F(x)\n')
         for i in range(len(bucket_boundaries) - 1):
-            f.write('{:.2f} - {:.2f}  |  {:.2f}  |  {:.2f}\n'.format(
+            f.write('{:.3f} - {:.3f}  |  {:.3f}  |  {:.3f}\n'.format(
                 bucket_boundaries[i], bucket_boundaries[i + 1], px[i], fx[i]
             ))
         f.write('\n')
@@ -52,10 +57,10 @@ def task_a():
 
     outputs = simulator.get_statistics()
     with open('output_a.txt', 'w') as f:
-        f.write('Average delay in queue: ' + str(outputs['average_delay_in_queue']) + ' minutes\n')
-        f.write('Average queue length:   ' + str(outputs['average_queue_length']) + '\n')
-        f.write('Server utilization:     ' + str(outputs['server_utilization']) + '\n')
-        f.write('Time simulation ended:  ' + str(outputs['time_simulation_ended']) + ' minutes\n')
+        f.write('Average delay in queue: {:.3f}\n'.format(outputs['average_delay_in_queue']))
+        f.write('Average queue length:   {:.3f}\n'.format(outputs['average_queue_length']))
+        f.write('Server utilization:     {:.3f}\n'.format(outputs['server_utilization']))
+        f.write('Time simulation ended:  {:.3f}\n'.format(outputs['time_simulation_ended']))
 
     interarrival_rv_pairs, service_rv_pairs = simulator.get_rv_pairs()
 
@@ -66,10 +71,12 @@ def task_a():
 
     plt.scatter(ix, iy)
     plt.title('Uni vs Expo - interarrival time')
-    plt.show()
+    if PLOT:
+        plt.show()
     plt.scatter(sx, sy)
     plt.title('Uni vs Expo - service time')
-    plt.show()
+    if PLOT:
+        plt.show()
 
     write_statistics('Uniform', ix + sx)
     write_statistics('Interarrival', iy, mean_interarrival_time)
@@ -104,7 +111,8 @@ def task_b():
     for i in range(1, 5):
         plt.plot([x[0] for x in data], [x[i] for x in data])
         plt.title(table[0][i] + ' - vs - k')
-        plt.show()
+        if PLOT:
+            plt.show()
 
 
 def main():
