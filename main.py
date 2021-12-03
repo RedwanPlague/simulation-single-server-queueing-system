@@ -11,7 +11,7 @@ def write_statistics(title, data, beta=None):
     if beta is None:
         bucket_boundaries = [x / 10 for x in range(0, 11)]
     else:
-        # bucket_boundaries = [0, 0.1, 0.3, 0.7, 1.5, 3.1]
+        # bucket_boundaries = [0, 0.1*beta, 0.3*beta, 0.7*beta, 1.5*beta, 3.1*beta, 6.3*beta]
         bucket_boundaries = [0, beta / 2, beta, 2 * beta, 3 * beta]
 
     weights = [1 / len(data)] * len(data)
