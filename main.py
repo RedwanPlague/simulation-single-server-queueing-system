@@ -93,23 +93,15 @@ def task_b(input_file, output_file):
         writer.writerows(table)
 
     data = table[1:]
-    plt.plot([x[0] for x in data], [x[1] for x in data])
-    plt.title('Average delay in queue - vs - k')
-    plt.show()
-    plt.plot([x[0] for x in data], [x[2] for x in data])
-    plt.title('Average queue length - vs - k')
-    plt.show()
-    plt.plot([x[0] for x in data], [x[3] for x in data])
-    plt.title('Server utilization - vs - k')
-    plt.show()
-    plt.plot([x[0] for x in data], [x[4] for x in data])
-    plt.title('Time simulation ended - vs - k')
-    plt.show()
+    for i in range(1, 5):
+        plt.plot([x[0] for x in data], [x[i] for x in data])
+        plt.title(table[0][i] + ' - vs - k')
+        plt.show()
 
 
 def main():
     task_a('input.txt', 'output_a.txt')
-    # task_b('input.txt', 'output_b.csv')
+    task_b('input.txt', 'output_b.csv')
 
 
 if __name__ == '__main__':
