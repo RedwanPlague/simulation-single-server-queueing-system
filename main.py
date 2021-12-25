@@ -12,20 +12,21 @@ def write_statistics(title, data, beta=None):
         bucket_boundaries = [x / 10 for x in range(0, 11)]
     else:
         # bucket_boundaries = [0, 0.1*beta, 0.3*beta, 0.7*beta, 1.5*beta, 3.1*beta, 6.3*beta]
-        bucket_boundaries = [0, beta / 2, beta, 2 * beta, 3 * beta]
+        # bucket_boundaries = [0, beta / 2, beta, 2 * beta, 3 * beta]
+        bucket_boundaries = [x / 10 for x in range(0, int(30*beta))]
 
     weights = [1 / len(data)] * len(data)
 
     px, _, _ = plt.hist(data, bins=bucket_boundaries, weights=weights, edgecolor='white')
-    plt.ylim(0, 1)
-    plt.xticks(bucket_boundaries)
+    # plt.ylim(0, 1)
+    # plt.xticks(bucket_boundaries)
     plt.title(title + ' P(x)')
     if PLOT:
         plt.show()
     fx, _, _ = plt.hist(data, bins=bucket_boundaries, cumulative=True, weights=weights, color='green',
                         edgecolor='white')
-    plt.ylim(0, 1)
-    plt.xticks(bucket_boundaries)
+    # plt.ylim(0, 1)
+    # plt.xticks(bucket_boundaries)
     plt.title(title + ' F(x)')
     if PLOT:
         plt.show()
